@@ -79,40 +79,40 @@ public class MagicSquareGame{
         }
     }
 
-    public static void move(int square[][],int i,int j, String direction){
+    public static boolean move(int square[][],int i,int j, String direction){
 
         int n = square.length;
         // Scanner scanner = new Scanner(System.in);
 
         // String userInput = scanner.nextLine();
-
+        if (i < 0 || i >= n || j < 0 || j >= n) {
+            return false;
+        }
         if(direction.equalsIgnoreCase("D")){
             if(i+1< n){
             swap(square,i,j,i+1,j);
-            } else{
-                System.out.println("invalid input");
+            return true;
             }
+            
         }else if (direction.equalsIgnoreCase("U")){
             if(i > 0){
-            swap(square,i,j,i-1,j);}
-            else{
-                System.out.println("invalid input");
+            swap(square,i,j,i-1,j);
+            return true;
             }
         }else if(direction.equalsIgnoreCase("R")){
             if(j +1 < n){
-            swap(square,i,j,i,j+1);}
-             else{
-                System.out.println("invalid input");
+            swap(square,i,j,i,j+1);
+            return true;
             }
+             
         }else if(direction.equalsIgnoreCase("L")){
             if(j > 0){
             swap(square,i,j,i,j-1);
-            } else{
-                System.out.println("invalid input");
+            return true;
             }
         }
         
-
+        return false;
     }
 
     public static boolean isMagicSquare(int [][] square){
@@ -186,22 +186,36 @@ public class MagicSquareGame{
         int n;
         String userInput;
         int count =0;
-        do { 
-            System.out.println("Please input a postive odd integer: ");
-            n = scanner.nextInt();
-        } while (n <= 0 || n % 2 == 0);
+        while (true) {
+        System.out.println("Please input a positive odd integer: ");
+        String firstInput = scanner.nextLine().trim();
 
-            scanner.nextLine();
+        try {
+            n = Integer.parseInt(firstInput);
+            if (n > 0 && n % 2 == 1) {
+                break;
+            } else {
+                System.out.println("Input must be a positive odd integer.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid integer.");
+        }
+    }
 
 
           generate_MagicSqaure magicSqaure = new generate_MagicSqaure();
           int [][] square = magicSqaure.generateMagicSqaure(n);
         
-        shuffle(square);
-        display(square);
 
+            do {
+            shuffle(square);
+        }while (isMagicSquare(square));
+
+
+        display(square);
+        System.out.println();
         while (!isMagicSquare(square)){
-            System.out.println("Enter move as: row column direction (e.g. 1 2 R): ");
+            System.out.print("Enter move as: row column direction (e.g. 1 2 R): ");
             userInput = scanner.nextLine().trim();
              if (userInput.isEmpty()) {
                 System.out.println("Empty input. Please try again.");
@@ -226,10 +240,14 @@ public class MagicSquareGame{
                 System.out.println("Row and column must be integers.");
                 continue;
             }
-            move(square, row, column, direction);
+           if (!move(square, row, column, direction)){
+            System.out.println("Invalid input. try again");
+            continue;
+           }
             count ++;
-
             display(square);
+
+            
         }System.out.println(count);
 
 
